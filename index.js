@@ -1,26 +1,37 @@
 'use strict';
 
-var os = require('os');
-var ifaces = os.networkInterfaces();
 const {app, dialog, BrowserWindow, ipcMain} = require('electron');
+const EventEmitter = require('events');
 const dgram = require('dgram');
 const fs = require('fs');
-const EventEmitter = require('events');
+
+// For exposing available ip addresses to the user
+const os = require('os');
+const ifaces = os.networkInterfaces();
+
+// Additional needed packages
 const Uint64BE = require("int64-buffer").Uint64BE;
 const crc32 = require('buffer-crc32');
 
-var ServerClient;
-var udpCommunicatorEmitter = new EventEmitter();
+try {
+  // Load environmental variables
+  require('dotenv').load()
 
-// Load environmental variables
-require('dotenv').load()
+  if (process.env.NODE_ENV === "development") {
+    let hotReloadServer = require('hot-reload-server')
+    let webpackConfig = require('./webpack.config.dev')
+    let webpack = require('webpack');
 
-if (process.env.NODE_ENV === "development") {
-  let hotReloadServer = require('hot-reload-server')
-  let webpackConfig = require('./webpack.config.dev')
-  hotReloadServer(webpackConfig, {
-    publicPath: '/dist'
-  }).start()
+    webpack(webpackConfig, function (err, data) {
+      if (err) console.log(err);
+    });
+
+    hotReloadServer(webpackConfig, {
+      publicPath: '/dist',
+    }).start()
+  }
+} catch (e){
+  console.log(e);
 }
 
 // Macimum count of repeats for re-sending message
@@ -54,6 +65,9 @@ const Uint64BEZero = new Uint64BE(0);
 var win;
 var sentMessages = [], receivedMessages = [];
 var serverConf = null;
+var ServerClient;
+var udpCommunicatorEmitter = new EventEmitter();
+
 
 function createWindow() {
   // Create the browser window.
@@ -108,28 +122,28 @@ app.on('activate', () => {
   }
 });
 
-function _onGetAvailableAddresses(e){
+function _onGetAvailableAddresses(e) {
   var addresses = [];
 
   Object.keys(ifaces).forEach(function (ifname) {
-  var alias = 0;
-  ifaces[ifname].forEach(function (iface) {
-    if ('IPv4' !== iface.family) {
-      // skip over non-ipv4 addresses
-      return;
-    }
+    var alias = 0;
+    ifaces[ifname].forEach(function (iface) {
+      if ('IPv4' !== iface.family) {
+        // skip over non-ipv4 addresses
+        return;
+      }
 
-    if (alias >= 1) {
-      // this single interface has multiple ipv4 addresses
-      addresses.push(iface.address);
-    } else {
-      // this interface has only one ipv4 adress
-      addresses.push(iface.address);
-    }
-    ++alias;
+      if (alias >= 1) {
+        // this single interface has multiple ipv4 addresses
+        addresses.push(iface.address);
+      } else {
+        // this interface has only one ipv4 adress
+        addresses.push(iface.address);
+      }
+      ++alias;
+    });
   });
-});
-e.returnValue = addresses.length > 0 ? addresses : null;
+  e.returnValue = addresses.length > 0 ? addresses : null;
 }
 
 var startEvent = null;

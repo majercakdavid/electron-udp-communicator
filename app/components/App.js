@@ -35,12 +35,14 @@ class App extends Component {
         var addresses = ipcRenderer.sendSync('get-available-addresses');
         if (addresses) {
             this.setState({ available_addresses: addresses });
+            // Defaultly selected
+            this.setState({config_ip: addresses[0]});
         }
 
         var response = ipcRenderer.sendSync('get-server-conf');
         if (response) {
             if (response.type == "ERROR") {
-                this.state({ config_message: response.type + ": " + response.message });
+                this.setState({ config_message: response.type + ": " + response.message });
             } else {
                 this.setState({
                     config_message: "Server started, address: " + response.address + " ,port: " + response.port + ".",
@@ -202,9 +204,6 @@ class App extends Component {
 
         var availableAddresses = null;
         if (this.state.available_addresses) {
-            // Defaultly selected
-            this.setState({config_ip: this.state.available_addresses[0]});
-            
             availableAddresses = this.state.available_addresses.map((address, i) => {
                 return (<option key={i} value={address}>{address}</option>);
             });

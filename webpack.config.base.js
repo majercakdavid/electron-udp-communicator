@@ -6,7 +6,7 @@ const config = {
 		path.join(__dirname, '/app/index.js')
 	],
 	output: {
-		path: path.join(__dirname, '/dist'),
+		path: __dirname + '/app/dist',
 		filename: 'bundle.js'
 	},
 	module: {
@@ -30,7 +30,7 @@ const config = {
 			}
 		]
 	},
-	postcss: function() {
+	postcss: function () {
 		return [
 			require('autoprefixer')
 		]

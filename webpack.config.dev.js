@@ -17,6 +17,8 @@ config.entry = [
 
 // Set output
 config.output.publicPath = 'http://localhost:4000/dist/'
+config.output.path = __dirname + '/app/dist';
+config.output.filename = 'bundle.js'
 
 // Enable source maps
 config.devtool = 'source-map'
