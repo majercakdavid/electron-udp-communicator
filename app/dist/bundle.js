@@ -63,7 +63,7 @@
 /******/ 	}
 /******/
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "c659da906950cede5b00"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "c5841ac0897106f75953"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/
@@ -11588,10 +11588,6 @@
 	                alert("ERROR: IP address is not in correct format!");
 	                return;
 	            }
-	            if (this.state.destination_fragment_size < 1 || this.state.destination_fragment_size > 65535) {
-	                alert("ERROR: Fragment size out of range(1-65535)!");
-	                return;
-	            }
 	
 	            var response;
 	            if (err) {
@@ -11796,6 +11792,23 @@
 	                );
 	            }
 	
+	            var messageText = null;
+	            if (this.state.displayed_message_text) {
+	                messageText = _react2.default.createElement(
+	                    'div',
+	                    { className: 'form-group' },
+	                    _react2.default.createElement(
+	                        'label',
+	                        null,
+	                        'Received message'
+	                    ),
+	                    _react2.default.createElement(
+	                        'textarea',
+	                        { className: 'form-control', rows: '3', readonly: true },
+	                        this.state.displayed_message_text
+	                    )
+	                );
+	            }
 	            // Prepare list with the details about message
 	            var messageDetails = null;
 	            if (this.state.displayed_message_details) {
@@ -11968,6 +11981,7 @@
 	                                _react2.default.createElement(
 	                                    'div',
 	                                    { className: 'pane padded-more' },
+	                                    messageText,
 	                                    _react2.default.createElement(
 	                                        'table',
 	                                        { className: 'table-striped' },

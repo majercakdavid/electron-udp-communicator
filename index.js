@@ -31,7 +31,7 @@ try {
     }).start()
   }
 } catch (e){
-  console.log(e);
+  //console.log(e);
 }
 
 // Macimum count of repeats for re-sending message
@@ -77,7 +77,7 @@ function createWindow() {
   win.loadURL("file://" + __dirname + "/app/index.html");
 
   // Open the DevTools.
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
   // Handle requests from electron window
   ipcMain.on('get-available-addresses', _onGetAvailableAddresses)
@@ -225,7 +225,7 @@ function _openSaveDialog(e, messageID) {
       return;
     }
     // fileName is a string that contains the path and filename created in the save file dialog.  
-    fs.writeFile(fileName, message.data.data, function (err) {
+    fs.writeFile(fileName, Buffer.from(message.data.data), function (err) {
       if (err) {
         console.log("An error ocurred creating the file " + err.message);
         e.returnValue = { type: "ERROR", message: "An error ocurred creating the file " + err.message };
@@ -509,11 +509,11 @@ function _receiveData(msg, rinfo) {
   }
   // 1: Request for next dataram
   else if (messageType === 1) {
-    datagramReceived = new Uint64BE(msgBuffer.slice(17, 25), 0).toBuffer();
+    var datagramReceived = new Uint64BE(msgBuffer.slice(17, 25), 0).toBuffer();
     udpCommunicatorEmitter.emit('datagram_received', datagramReceived);
   }
   else if (messageType === 200) {
-    datagramReceived = new Uint64BE(msgBuffer.slice(17, 25), 0).toBuffer();
+    var datagramReceived = new Uint64BE(msgBuffer.slice(17, 25), 0).toBuffer();
     messageReceived = true;
     udpCommunicatorEmitter.emit('datagram_received', datagramReceived);
   }

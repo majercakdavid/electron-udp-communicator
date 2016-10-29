@@ -117,10 +117,6 @@ class App extends Component {
             alert("ERROR: IP address is not in correct format!");
             return;
         }
-        if (this.state.destination_fragment_size < 1 || this.state.destination_fragment_size > 65535) {
-            alert("ERROR: Fragment size out of range(1-65535)!");
-            return;
-        }
 
         var response;
         if (err) {
@@ -259,6 +255,13 @@ class App extends Component {
             receivedMessages = <strong>No Messages to display...</strong>
         }
 
+        var messageText = null;
+        if(this.state.displayed_message_text){
+            messageText =   <div className="form-group">
+                                <label>Received message</label>
+                                <textarea className="form-control" rows="3" readonly>{ this.state.displayed_message_text }</textarea>
+                            </div>;
+        }
         // Prepare list with the details about message
         var messageDetails = null;
         if (this.state.displayed_message_details) {
@@ -342,6 +345,7 @@ class App extends Component {
                                     </ul>
                                 </div>
                                 <div className="pane padded-more">
+                                    { messageText }
                                     <table className="table-striped">
                                         <thead>
                                             <tr>
